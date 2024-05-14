@@ -1,0 +1,95 @@
+---
+title: "Minawao Headcount Result"
+author:  
+   Idrissa DABO
+title-block-banner: "#D7DBDD"
+date-modified: "10/05/2024"
+date-format: "MM/D/YYYY, HH:mm"
+lang: fr
+language: 
+  title-block-author-single: "Deputy Head of RAM WFP Cameroon"
+  title-block-modified: "Dernière Mise à Jour"
+format: 
+  html:
+    self-contained: true
+    toc: true
+    toc-location: right
+editor: visual
+
+---
+
+```{r echo=FALSE}
+htmltools::img(src = knitr::image_uri(file.path("image/WFP-logo.png")), 
+               alt = 'logo', 
+               style = 'position:absolute; top:0; right:0; padding:10px;',width = 200,height = 145)
+```
+
+
+## Première  visualisation
+Commence par charger les packages nécessaires pour faire le data cleaning
+
+```{r warning = FALSE, message = FALSE}
+library(writexl)
+library(echarts4r)
+library(tidyverse)
+# library(gtsummary)
+library(fst)
+```
+
+Importation de la base de donnée issue de la collecte et premier inspection des résultats. la base de donnée est volumineuse avec une taille de 1,4GB. Pour travailler plus vite je travaille avec le format FST qui fait 1,47MB.
+
+```{r warning = FALSE, message = FALSE}
+data_headcount <- read_fst("last headcount data.fst")
+# nrow(data_headcount)
+sum(data_headcount$size_tot,na.rm = TRUE)
+nrow(data_headcount)
+```
+
+En explorant la base de donnée sans aucun traitement ni suppression des doublons nous avons 14253 ménages et 56458 réfugiés
+
+Dans le syntaxe ci-dessous nous allons compter le nombre de ménage concerné par les doublons sur les 14253
+
+
+## Identification  des doublons
+
+```{r warning = FALSE, message = FALSE}
+doublon <- data_headcount[which(duplicated(data_headcount$nomen) == TRUE),]
+doublon <- data_headcount[which(data_headcount$nomen %in% unique(doublon$nomen)),]
+nrow(doublon)
+```
+
+Sur les 14253 ménage, 1529 observations dont 783 identifiant uniques sont concernés par les doublons. différentes types d'erreurs sont identifiés par rapport aux doublons:
+
+-   Un même ménage a été enregistré par deux enquêteurs différents avec la prise en compte de tous les membres du ménages
+-   Il ya des ménages pour lesquelles un enquêteur indique que le ménage physiquement absent et pour le même ménage un autre enquêteur indique que le ménage est non seulement présent mais que tous les membres du ménage sont présents
+-   Un même ménage est enregitré 3 fois dont 2 fois le premier jour et 1 fois le lendemain.
+-   Pour un même jour un enquêteur renseigne que seul un membre du ménage est présent et le précise dans les observations ets un autre enquêteur enquête le ménage et renseigne avoir identifié tous les membres de ce ménages.
+-   Pour même ménage une partie des membres ont été identifié le premier jour de la collecte, les membres absents sont quant à eux enregistrés le dernier jour de l'enquête.
+
+
+## Correction des doublons
+
+Pour corriger les doublons il faut s'assurer de prendre en compte tous les membres identifiés même s'ils ont été identifiés le second. La méthodologie adoptée sera de séparé la colonne contenant simultanément l'identifiant de beaucoup de membres  en plusieurs colonnes contenant des identifiants unique puis de mettre tous les individus ou membres de façon superposée dans la même colonne, d'enlever les identifiants duliqués puis d'avoir une base donnée avec une ligne pour chaque membres aossiociés au numéro de son ménage.
+
+
+
+```{r warning = FALSE, message = FALSE}
+data_headcount_final <- data_headcount |> separate(
+  Individus, sep = " ",into = c(paste("colonne", as.factor(1:15),sep = "_"))
+) |> pivot_longer(
+  cols = starts_with("colonne"),
+  names_to = "nb_individu",
+  values_to = "code_individu",
+  values_drop_na = TRUE
+) |> distinct(
+  code_individu, .keep_all = TRUE
+) 
+
+length(unique(data_headcount_final$code_individu))
+length(unique(data_headcount_final$nomen))
+```
+
+Au final nous avons 12735 ménages et 53837 réfugiés.
+
+
+
