@@ -34,6 +34,12 @@ library(echarts4r)
 library(tidyverse)
 # library(gtsummary)
 library(fst)
+library(DT)
+
+data_headcount_old <- read.csv("data_headcount.csv")
+data_headcount_old <- data_headcount_old |> select(numinstance,anneeenreg,noordre,nomen,Observations_g_n_rales) |> dplyr::distinct(nomen,.keep_all = TRUE)
+
+data_hedacount_select <- data_headcount_old |> datatable(rownames = FALSE,filter = 'top')
 ```
 
 Importation de la base de donnée issue de la collecte et premier inspection des résultats. la base de donnée est volumineuse avec une taille de 1,4GB. Pour travailler plus vite je travaille avec le format FST qui fait 1,47MB.
@@ -90,6 +96,11 @@ length(unique(data_headcount_final$nomen))
 ```
 
 Au final nous avons 12735 ménages et 53837 réfugiés.
+
+```{r warning = FALSE, message = FALSE}
+data_hedacount_select
+
+```
 
 
 
