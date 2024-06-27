@@ -53,7 +53,7 @@ nrow(data_headcount)
 
 En explorant la base de donnée sans aucun traitement ni suppression des doublons nous avons 14253 ménages et 56458 réfugiés
 
-Dans le syntaxe ci-dessous nous allons compter le nombre de ménage concerné par les doublons sur les 14253
+Dans la syntaxe ci-dessous nous allons compter le nombre de ménage concerné par les doublons sur les 14253
 
 
 ## Identification  des doublons
@@ -69,8 +69,8 @@ Sur les 14253 ménage, 1529 observations dont 783 identifiant uniques sont conce
 -   Un même ménage a été enregistré par deux enquêteurs différents avec la prise en compte de tous les membres du ménages
 -   Il ya des ménages pour lesquelles un enquêteur indique que le ménage physiquement absent et pour le même ménage un autre enquêteur indique que le ménage est non seulement présent mais que tous les membres du ménage sont présents
 -   Un même ménage est enregitré 3 fois dont 2 fois le premier jour et 1 fois le lendemain.
--   Pour un même jour un enquêteur renseigne que seul un membre du ménage est présent et le précise dans les observations ets un autre enquêteur enquête le ménage et renseigne avoir identifié tous les membres de ce ménages.
--   Pour même ménage une partie des membres ont été identifié le premier jour de la collecte, les membres absents sont quant à eux enregistrés le dernier jour de l'enquête.
+-   Pour un même jour un enquêteur renseigne que seul un membre du ménage est présent et le précise dans les observations et un autre enquêteur interroge le même le ménage et renseigne avoir identifié tous les membres de ce ménages.
+-   Pour un même ménage une partie des membres ont été identifiés le premier jour de la collecte, les membres absents sont quant à eux enregistrés le dernier jour de l'enquête.
 
 
 ## Correction des doublons
